@@ -21,6 +21,7 @@ Go to **/yolo_classes** to check all what Yolo can classify.
 On **/car_model_segment_and_crop** you can see how Yolo and OpenCV work together, car segmentation and cropping helped a lot to improve accuracy of model.
 
 ### Samples
+![2023-07-16_10-13-14](https://github.com/JuliaBars/FastAPI_app_for_car_classification_ML/assets/107411145/767d1798-28bd-4de5-8fb6-d65e5bc02f86)
 
 ---
 ### Getting Started
