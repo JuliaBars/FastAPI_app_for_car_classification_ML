@@ -11,36 +11,40 @@ import torchvision.transforms as transforms
 
 from models.sample_model.labels import cars_models
 
-# Initialize the models
-model_sample_model = YOLO("./models/sample_model/yolov8n.pt")
+# Initialize the model
+model_sample_model = YOLO('./models/sample_model/yolov8n.pt')
 
+
+# region Common func
 
 def get_image_from_bytes(binary_image: bytes) -> Image:
-    """ Convert image from bytes to PIL RGB format. """
-    input_image = Image.open(io.BytesIO(binary_image)).convert("RGB")
+    ''' Convert image from bytes to PIL RGB format. '''
+    input_image = Image.open(io.BytesIO(binary_image)).convert('RGB')
     return input_image
 
 
 def get_bytes_from_image(image: Image) -> bytes:
-    """ Convert PIL image to Bytes. """
+    ''' Convert PIL image to Bytes. '''
     return_image = io.BytesIO()
     image.save(return_image, format='JPEG', quality=100)
     return_image.seek(0)
     return return_image
 
+# endregion
+
+# region Yolo func
+
 
 def transform_predict_to_df(results: list, labeles_dict: dict) -> pd.DataFrame:
-    """
-    Transform predict from yolov8 (torch.Tensor) to pandas DataFrame.   
-    """
+    ''' Transform predict from yolov8 (torch.Tensor) to pandas DataFrame. '''
     predict_bbox = pd.DataFrame(
-        results[0].to("cpu").numpy().boxes.xyxy, columns=[
-            'xmin', 'ymin', 'xmax', 'ymax']
+        results[0].to('cpu').numpy().boxes.xyxy, columns=[
+            'xmin', "ymin", 'xmax', 'ymax']
         )
-    predict_bbox['confidence'] = results[0].to("cpu").numpy().boxes.conf
+    predict_bbox['confidence'] = results[0].to('cpu').numpy().boxes.conf
     predict_bbox['class'] = (
-        results[0].to("cpu").numpy().boxes.cls).astype(int)
-    predict_bbox['name'] = predict_bbox["class"].replace(labeles_dict)
+        results[0].to('cpu').numpy().boxes.cls).astype(int)
+    predict_bbox['name'] = predict_bbox['class'].replace(labeles_dict)
     return predict_bbox
 
 
@@ -48,7 +52,7 @@ def get_model_predict(
         model: YOLO, input_image: Image,
         save: bool = False, image_size: int = 1248,
         conf: float = 0.5, augment: bool = False) -> pd.DataFrame:
-    """ Get the predictions of a model on an input image. """
+    ''' Get the predictions of a model on an input image. '''
     predictions = model.predict(
                         imgsz=image_size,
                         source=input_image,
@@ -63,10 +67,8 @@ def get_model_predict(
     return predictions
 
 
-# ----------------------- BBOX Func -----------------------
-
 def add_bboxs_on_img(image: Image, predict: pd.DataFrame()) -> Image:
-    """ Add a bounding box on the image. """
+    ''' Add a bounding box on the image. '''
     annotator = Annotator(np.array(image))
     predict = predict.sort_values(by=['xmin'], ascending=True)
     for i, row in predict.iterrows():
@@ -77,7 +79,7 @@ def add_bboxs_on_img(image: Image, predict: pd.DataFrame()) -> Image:
 
 
 def detect_sample_model(input_image: Image) -> pd.DataFrame:
-    """ Predict from sample_model. Base on YoloV8. """
+    ''' Predict from sample_model. Base on YoloV8. '''
     predict = get_model_predict(
         model=model_sample_model,
         input_image=input_image,
@@ -88,14 +90,16 @@ def detect_sample_model(input_image: Image) -> pd.DataFrame:
     )
     return predict
 
+# endregion
 
-#------------------------MODELS CLASSIFICATION------------------------
+# region Car classification func
+
 
 class YOLOSegmentation:
-    """
+    '''
     Useful class to get bboxes, classes, segmentations, scores in correct
     format to pass them to cv2 image processed functions.
-    """
+    '''
     def __init__(self, model_path):
         self.model = YOLO(model_path)
 
@@ -117,7 +121,7 @@ class YOLOSegmentation:
         return bboxes, class_ids, segmentation_contours_idx, scores
 
 
-#model for segmentation
+# Initialize model for segmentation
 model_for_classify = YOLOSegmentation("./models/sample_model/yolov8m-seg.pt")
 
 # for model classification project we will segment only cars, busses, truckes
@@ -129,7 +133,7 @@ classes_ids = [
 
 
 def extract_segment_image(img, segmentator=model_for_classify) -> Image:
-    """ Extract segmented and cropped car, truck, bus and return as PIL"""
+    ''' Extract segmented and cropped car, truck, bus and return as PIL. '''
     open_cv_image = np.array(img)
     open_cv_image = open_cv_image[:, :, ::-1].copy()
 
@@ -151,7 +155,7 @@ def extract_segment_image(img, segmentator=model_for_classify) -> Image:
 
 
 def load_model():
-    """ Load and evaluate saved model. """
+    ''' Load and evaluate saved model. '''
     model = torch.load(
         './models/sample_model/model_mob_netv3_79_perc.pth',
         map_location=torch.device('cpu'))
@@ -159,8 +163,8 @@ def load_model():
     return model
 
 
-def image_to_tensor(cv2_img: np.ndarray) ->  torch.Tensor:
-    """ Converting cv2 output to torch tensor. """
+def image_to_tensor(cv2_img: np.ndarray) -> torch.Tensor:
+    ''' Converting cv2 output to torch tensor. '''
     image = cv2.cvtColor(cv2_img, cv2.COLOR_BGR2RGB)
     transform = transforms.Compose([
         transforms.ToTensor(),
@@ -180,6 +184,7 @@ def draw_predictions_on_image(img: Image, label: str) -> Image:
 
 
 def predict_brand_and_model(img, segmentator=model_for_classify):
+    ''' Predict car's brand and model using PyTorch model. '''
     open_cv_image = np.array(img)
     open_cv_image = open_cv_image[:, :, ::-1].copy()
 
@@ -201,7 +206,7 @@ def predict_brand_and_model(img, segmentator=model_for_classify):
     answer = predict.argmax(-1)
     name = cars_models.get(answer.item()).split('_')
     name = f'Brand: {name[0]}, model: {name[1]}'
-    im_rgb = cv2.cvtColor(crop_img, cv2.COLOR_BGR2RGB)
-    # PIL_im = Image.fromarray(im_rgb)
-    PIL_im = draw_predictions_on_image(img, name)
-    return PIL_im
+    im_PIL = draw_predictions_on_image(img, name)
+    return im_PIL
+
+# endregion
