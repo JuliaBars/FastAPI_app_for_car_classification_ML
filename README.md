@@ -9,9 +9,11 @@ To classify cars go to **/car_brand_model_classification** and download jpg imag
 After execute you will get the answer in Response Body. 
 
 ---
+
 The model is very light and works fast, but the accuracy sometimes is not extremly high. Anyway hope you will like it.
 I used mobelinet_v3 with transfer learning on PyTorch.
 You can find details in my repository: [link](https://github.com/JuliaBars/cars_model_classification)
+
 ---
 
 You can also try Yolo8 functionality on **/img_object_detection_to_img**.
@@ -19,6 +21,7 @@ Go to **/yolo_classes** to check all what Yolo can classify.
 On **/car_model_segment_and_crop** you can see how Yolo and OpenCV work together, car segmentation and cropping helped a lot to improve accuracy of model.
 
 ### Samples
+![2023-07-16_10-13-14](https://github.com/JuliaBars/FastAPI_app_for_car_classification_ML/assets/107411145/767d1798-28bd-4de5-8fb6-d65e5bc02f86)
 
 ---
 ### Getting Started
