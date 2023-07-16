@@ -52,12 +52,7 @@ pip install -r requirements.txt
 2. Start the application:
 ```
 uvicorn main:app --reload --port 8001
-```  
-
-### Overview of the code
-* [main.py](./main.py) - Base FastAPI functions  
-* [app.py](./app.py) - classify functions  
-* [./models](./models) - YoloV8 model and my model for classification  
+``` 
 
 ---
 ### Tests
