@@ -9,9 +9,11 @@ To classify cars go to **/car_brand_model_classification** and download jpg imag
 After execute you will get the answer in Response Body. 
 
 ---
+
 The model is very light and works fast, but the accuracy sometimes is not extremly high. Anyway hope you will like it.
 I used mobelinet_v3 with transfer learning on PyTorch.
 You can find details in my repository: [link](https://github.com/JuliaBars/cars_model_classification)
+
 ---
 
 You can also try Yolo8 functionality on **/img_object_detection_to_img**.
