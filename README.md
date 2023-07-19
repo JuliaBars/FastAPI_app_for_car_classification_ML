@@ -24,8 +24,11 @@ On **/car_model_segment_and_crop** you can see how Yolo and OpenCV work together
 ![classification](https://github.com/JuliaBars/JuliaBars/assets/107411145/d3b6e28b-13d1-464c-b5d2-56cec46aaf8e)
 <details>
 <summary>For more examples click below</summary>
+  
 ![segment and crop](https://github.com/JuliaBars/JuliaBars/assets/107411145/767247d2-de11-47b4-98bb-ba07443d896b)
+  
 ![detection](https://github.com/JuliaBars/JuliaBars/assets/107411145/be2d4d31-2e8d-4ba9-a16d-1200344bd7a4)
+
 ![2023-07-16_22-33-30](https://github.com/JuliaBars/FastAPI_app_for_car_classification_ML/assets/107411145/a08026d4-5f85-4efa-896a-bd398395c486)
 </details>
 
